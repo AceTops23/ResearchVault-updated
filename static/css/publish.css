@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+*{
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    background-color: white !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+a{
+    text-decoration: none !important;
+    color: black !important;
+}
+
+i{
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+
+
+.container{
+    color: black;
+    padding: 20px;
+    height: 95%;
+    background: #C1D3DF !important;
+    gap: 20px;
+    border-radius: 5px;
+}
+
+@media screen and (max-width: 1700px){
+    .container{
+        overflow: auto;
+    }
+}
+input{
+    color: white !important;
+    border: none;
+    padding: 8px;;
+    background-color: #EFF6E0 !important;
+}
+
+.form-control{
+    background-color: rgb(35, 50, 59) !important;
+    color: white !important;
+    border: 1px solid #627179 !important;
+}
+
+input::placeholder{
+    color: white !important;
+}
+
+.form-control{
+    resize: none;
+    max-height: 100%;
+}
+
+textarea::placeholder{
+    color: white !important
+}
+
+#submit-publish{
+    color: black !important;
+    background-color: white !important; 
+    outline: none;
+    border: none;
+    box-shadow: none;
+    transition: all 0.3s;
+}
+
+#submit-publish:hover{
+    transition: all 0.3s;
+    color: black !important;
+    background: #AEC3B0 !important;
+}
+
+.form-control:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+.hidden{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+  
+label{
+    color: black !important;
+}

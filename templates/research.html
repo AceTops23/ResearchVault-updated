@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/research.css') }}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <title>ResearchVault</title>
+</head>
+<body> 
+    <div class="browse-container container">
+        <div class="browse-navbar d-flex justify-content-between align-items-center">
+            <img src="static/pics/logo.png" class="img-fluid">
+    
+            <div class="browse-right">
+                <a href="/" id="home-edit"><i class='bx bx-home-alt-2'></i>Home</a>
+                <a href="/research" id="edit-browse"><i class='bx bx-edit-alt'></i>Research</a>
+                <a href="/browse" id="browse-browse"><i class='bx bx-search' ></i>Browse</a>
+                <a href="/chatbot" id="chatbot-browse"><i class='bx bx-bot'></i></i>Chatbot</a>
+            </div>
+        </div>
+
+            <div class="browse-content d-flex flex-column flex-grow-1">
+                <div class="search-results d-flex flex-column">
+                    <div class="container-fluid">
+                        <div class="row">
+                              <div class="col-md-10">
+                                <div class="col-md-10">
+                                    <div class="browse-result d-flex flex-column">
+                                        <input type="search" id="search-input" placeholder="SEARCH" value="{{ search_query }}">
+                                        <button type="submit" id="search-button">SEARCH</button>
+                                        {% for item in items %}
+                                        <a class="browse-item" href="{{ url_for('DV', item_id=item.id) }}" data-subjectArea="{{ item.subjectArea }}">
+                                            {{ item.title }}
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            
+                            <footer class="text-center">
+                                <h3>ResearchVault</h3>
+                                <p>©2023 by ResearchVault</p>
+                            </footer>
+                            </div>
+                            </div>
+                            
+    
+    <script src="static/js/research.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
+</html>

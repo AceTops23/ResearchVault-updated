@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Researchvault</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/abstract.css') }}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <a href="/"><i class='bx bx-chevron-left'></i></a>
+    <div class="legend">
+        <h4>Legend: </h1>
+        <p id="intro"> Introduction </p>
+        <p id="method"> Method</p>
+        <p id="result"> Result</p>
+        <p id="discussion"> Discussion</p>
+    </div>
+    <div class="container">
+        <h1>{{ title }}</h1> 
+        <div id="ajax-container" class="span-container">
+            <!-- AJAX response will be inserted here -->
+        </div>
+        <div class="buttons">
+            <button id="generate">Generate Abstract</button>
+            <button id="submit">Submit</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/abstract.js') }}"></script>
+</body>
+</html>
