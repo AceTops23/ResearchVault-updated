@@ -23,7 +23,7 @@ from flask import Flask, jsonify, redirect, render_template, request, session, s
 from joblib import load
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
-from PyPDF2 import PdfFileReader, PdfFileWriter, PageObject, PdfReader
+from PyPDF2 import PdfFileReader, PdfFileWriter, PageObject
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
@@ -815,81 +815,6 @@ def convert_docx_to_text():
         
         
         
-
-def convert_to_imrad(file_path, item_id):
-    """Convert a PDF file to IMRaD format."""
-    try:
-        # Get the publication by its ID
-        publication = db_connection.get_publication_by_id(item_id)
-
-        # Check if there is a similar title in the "heys" table
-        similar_title_record = db_connection.get_similar_titles(publication['title'])
-
-        if similar_title_record is not None:
-            
-            time.sleep(random.randint(5, 15))
-            
-            print(f"Found existing IMRaD file for title {publication['title']}")
-            
-
-            # Get the old file path
-            old_file_path = os.path.join("IMRADs", similar_title_record['path'])
-            
-            # Create a new file name based on the title from publication and add "_IMRAD" to its file name
-            new_file_name = f"{publication['title']}_IMRAD{os.path.splitext(old_file_path)[1]}"
-            
-            # Create a new file path in the "uploads" folder
-            new_file_path = os.path.join("uploads", new_file_name)
-            
-            # Move or copy the file to the new location
-            shutil.copy(old_file_path, new_file_path)  # Use shutil.copy instead if you want to copy the file
-
-            return new_file_path
-
-        print("Loading the PDF file...")
-        # Load the PDF file
-        pdf = PdfFileReader(file_path)
-        
-        # Extract text from each page
-        paragraphs = [page.extract_text().strip() for page in pdf.pages if page.extract_text().strip()]
-
-        print(f"Classifying {len(paragraphs)} paragraphs using the BERT model...")
-
-        # Classify each paragraph using BERT model
-        section_labels = [classify_text_section(para) for para in paragraphs]
-
-        # Sort sections based on the specified order
-        sorted_sections = sorted(zip(section_labels, paragraphs), key=lambda x: section_names[x[0]]['order'])
-
-        # Create a mapping of section names to section texts
-        section_texts = {section_names[label]['name']: para for label, para in sorted_sections}
-
-        # Convert the section texts into a new PDF file
-        converted_file_path = file_path.replace(os.path.splitext(file_path)[1], '_imrad.pdf')
-
-        pdf_writer = PdfFileWriter()
-
-        print("Writing the IMRaD format to the new PDF file...")
-
-        for section_name, section_text in section_texts.items():
-            # Add a page for each section
-            page = pdf_writer.add_page()
-            page.add_text(section_name, size=20, align='center')
-            page.add_text(section_text)
-
-        with open(converted_file_path, "wb") as out_f:
-            pdf_writer.write(out_f)
-
-        print(f"Converted file saved at {converted_file_path}")
-
-        return converted_file_path
-
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-
-
-        
-        
 @app.route('/convert_to_imrad/<int:item_id>', methods=['GET'])
 def convert_to_imrad_route(item_id):
     """Convert a specific publication to IMRaD format."""
@@ -910,11 +835,61 @@ def convert_to_imrad_route(item_id):
         db_connection.update_converted_file_path(item_id, converted_file_path)
         
         # Return the converted file
-        return send_file(converted_file_path, as_attachment=False, download_name=os.path.basename(converted_file_path))
+        return send_file(converted_file_path, mimetype='application/pdf', as_attachment=False)
     
     except Exception as e:
         # Return an error message if an exception occurs
         return jsonify({"message": "Error converting to IMRAD.", "error": str(e)}), 500
+    
+def convert_to_imrad(file_path, item_id):
+    try:
+        publication = db_connection.get_publication_by_id(item_id)
+
+        similar_title_record = db_connection.get_similar_titles(publication['title'])
+
+        if similar_title_record is not None:
+            
+            old_file_path = os.path.join("IMRADs", similar_title_record['path'])
+            
+            new_file_name = f"{publication['title']}_IMRAD{os.path.splitext(old_file_path)[1]}"
+            
+            new_file_path = os.path.join("uploads", new_file_name)
+            
+            shutil.copy(old_file_path, new_file_path) 
+
+            return new_file_path
+
+        pdf = PdfFileReader(file_path)
+        
+        paragraphs = [page.extract_text().strip() for page in pdf.pages if page.extract_text().strip()]
+
+        section_labels = [classify_text_section(para) for para in paragraphs]
+
+        sorted_sections = sorted(zip(section_labels, paragraphs), key=lambda x: section_names[x[0]]['order'])
+
+        section_texts = {section_names[label]['name']: para for label, para in sorted_sections}
+
+        converted_file_path = file_path.replace(os.path.splitext(file_path)[1], '_imrad.pdf')
+
+        pdf_writer = PdfFileWriter()
+        for section_name, section_text in section_texts.items():
+            print(f"Adding a page for the {section_name} section...")
+            # Add a page for each section
+            page = pdf_writer.add_page()
+            page.add_text(section_name, size=20, align='center')
+            page.add_text(section_text)
+
+        with open(converted_file_path, "wb") as out_f:
+            pdf_writer.write(out_f)
+
+        return converted_file_path
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
+
+        
+        
 
 
 
