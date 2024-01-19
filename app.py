@@ -75,10 +75,11 @@ section_names = {
 
 
 # Load the BERT model and tokenizer
-model_path = "Models\BERT Model try again" 
+model_path = "Models/BERT Model try again"
 tokenizer = BertTokenizer.from_pretrained(model_path)
 bert_model = BertForSequenceClassification.from_pretrained(model_path)
-model_path2 = "Models\BERT Model-20231125T124741Z-002" 
+
+model_path2 = "Models/BERT Model-20230912T133733Z-001"
 bert_model2 = BertForSequenceClassification.from_pretrained(model_path2)
 
 
@@ -136,6 +137,11 @@ def publish():
 def chatbot():
     """Render the chatbot page."""
     return render_template("chatbot.html")
+
+@app.route("/about")
+def about():
+    """Render the chatbot page."""
+    return render_template("about.html")
 
 
 @app.route('/DV')

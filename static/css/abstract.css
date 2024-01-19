@@ -19,10 +19,10 @@ body{
     justify-content: center;
     align-items: center;
     background: #C1D3DF;
-    width: 90%;
+    width: 80%;
     height: 90%;
     border-radius: 8px;
-    padding: 20px;
+    padding: 5px;
     gap: 20px; 
     overflow-y: auto; 
     max-height: 1000px;
@@ -89,7 +89,7 @@ body{
   
   .container span {
     height: 590px;
-    width: 300px;
+    width: 250px;
     cursor: pointer;
     color: black ;
     gap: 10px;
@@ -101,7 +101,7 @@ body{
     overflow-x: hidden; 
     scrollbar-width: thin; 
   
-    scrollbar-color: white #598392; 
+    scrollbar-color: white #C1D3DF; 
   
     &::-webkit-scrollbar {
       width: 5px; 
@@ -112,7 +112,7 @@ body{
     }
   
     &::-webkit-scrollbar-track {
-      background-color: #598392; 
+      background-color: #C1D3DF; 
     }
   }
 
@@ -137,7 +137,10 @@ body{
 }
 
 .legend{
+  display: flex;
+  flex-direction: column;
   font-size: 25px;
+  gap: 20px;
   position: absolute;
   bottom: 20px;
   left: 20px;
@@ -150,19 +153,27 @@ h4, p{
 }
 
 #intro{
+  padding: 10px;
+  background-color: #FFBABA;
   color: black;
 }
 
 #method{
+  padding: 10px;
+  background-color: #CAFCF9;
   color: black;
 }
 
 #result{
+  padding: 10px;
+  background-color: #CDFADC;
   color: black;
 }
 
 #discussion{
-  color:  black;
+  padding: 10px;
+  background-color: #EBA4E5;
+  color: black;
 }
 
 .section.Introduction {
