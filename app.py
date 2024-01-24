@@ -78,8 +78,6 @@ section_names = {
 model_path = "Models\BERT Model try again" 
 tokenizer = BertTokenizer.from_pretrained(model_path)
 bert_model = BertForSequenceClassification.from_pretrained(model_path)
-model_path2 = "Models\BERT Model-20231125T124741Z-002" 
-bert_model2 = BertForSequenceClassification.from_pretrained(model_path2)
 
 
 # Setting up Flask app
