@@ -23,7 +23,7 @@ from flask import Flask, jsonify, redirect, render_template, request, session, s
 from joblib import load
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
-from PyPDF2 import PdfFileReader, PdfFileWriter, PageObject
+from PyPDF2 import PdfFileReader, PdfFileWriter, PageObject, PdfReader
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
@@ -32,6 +32,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from transformers import BertTokenizer, BertForSequenceClassification
 from werkzeug.utils import secure_filename
+from reportlab.pdfgen import canvas
+from docx2pdf import convert
+
 
 # Conditional imports (if any)
 try:
@@ -75,9 +78,10 @@ section_names = {
 
 
 # Load the BERT model and tokenizer
-model_path = "Models\BERT Model try again" 
+model_path = "Models/BERT Model try again"
 tokenizer = BertTokenizer.from_pretrained(model_path)
 bert_model = BertForSequenceClassification.from_pretrained(model_path)
+
 
 
 # Setting up Flask app
@@ -134,6 +138,11 @@ def publish():
 def chatbot():
     """Render the chatbot page."""
     return render_template("chatbot.html")
+
+@app.route("/about")
+def about():
+    """Render the chatbot page."""
+    return render_template("about.html")
 
 
 @app.route('/DV')
@@ -839,56 +848,123 @@ def convert_to_imrad_route(item_id):
         # Return an error message if an exception occurs
         return jsonify({"message": "Error converting to IMRAD.", "error": str(e)}), 500
     
+    
+def extract_text_from_pdf(file_path):
+    """Extract text from a PDF file."""
+    pdf_reader = PdfReader(file_path)
+    text = ''
+    for page in pdf_reader.pages:
+        text += page.extract_text()
+    return text
+
+
+
+def write_text_to_pdf(section_texts, file_path):
+    """Write text to a PDF file."""
+    c = canvas.Canvas(file_path)
+    textobject = c.beginText()
+    textobject.setTextOrigin(10, 730)
+    for section_name, section_text in section_texts.items():
+        lines = section_text.split('\n')
+        for line in lines:
+            textobject.textLine(line)
+    c.drawText(textobject)
+    c.save()
+
 def convert_to_imrad(file_path, item_id):
+    """Convert a PDF file to IMRaD format."""
     try:
+        # Get the publication by its ID
         publication = db_connection.get_publication_by_id(item_id)
 
+        # Check if there is a similar title in the "heys" table
         similar_title_record = db_connection.get_similar_titles(publication['title'])
 
         if similar_title_record is not None:
             
+            time.sleep(random.randint(5, 15))
+            
+            print(f"Found existing IMRaD file for title {publication['title']}")
+            
+            # Get the old file path
             old_file_path = os.path.join("IMRADs", similar_title_record['path'])
             
+            # Create a new file name based on the title from publication and add "_IMRAD" to its file name
             new_file_name = f"{publication['title']}_IMRAD{os.path.splitext(old_file_path)[1]}"
             
+            # Create a new file path in the "uploads" folder
             new_file_path = os.path.join("uploads", new_file_name)
             
-            shutil.copy(old_file_path, new_file_path) 
+            # Move or copy the file to the new location
+            shutil.copy(old_file_path, new_file_path)  # Use shutil.copy instead if you want to copy the file
 
             return new_file_path
 
-        pdf = PdfFileReader(file_path)
-        
-        paragraphs = [page.extract_text().strip() for page in pdf.pages if page.extract_text().strip()]
+        # Open the PDF file and extract its text
+        pdf_reader = PdfReader(file_path)
+        num_pages = len(pdf_reader.pages)
+        paragraphs = [page.extract_text().strip() for page in pdf_reader.pages if page.extract_text().strip()]
+        print(f"Classifying {len(paragraphs)} paragraphs using the BERT model...")
 
+        # Classify each paragraph using BERT model
         section_labels = [classify_text_section(para) for para in paragraphs]
 
+        # Sort sections based on the specified order
         sorted_sections = sorted(zip(section_labels, paragraphs), key=lambda x: section_names[x[0]]['order'])
 
+        # Create a mapping of section names to section texts
         section_texts = {section_names[label]['name']: para for label, para in sorted_sections}
 
-        converted_file_path = file_path.replace(os.path.splitext(file_path)[1], '_imrad.pdf')
+        # Convert the section texts into a new DOCX file
+        converted_file_path = file_path.replace(os.path.splitext(file_path)[1], '_imrad.docx')
 
-        pdf_writer = PdfFileWriter()
+        converted_doc = Document()
+
+        print("Writing the IMRaD format to the new DOCX file...")
+
+        # Define the sections of the document
+        section = converted_doc.sections[0]
+
+        # Set the column width and spacing
+        cols = parse_xml(r'<w:cols xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" w:num="2" w:space="720" w:width="7200"/>')
+        section._sectPr.append(cols)
+
+        # Add the text with the specified font and size
         for section_name, section_text in section_texts.items():
-            print(f"Adding a page for the {section_name} section...")
-            # Add a page for each section
-            page = pdf_writer.add_page()
-            page.add_text(section_name, size=20, align='center')
-            page.add_text(section_text)
+            heading = converted_doc.add_heading(level=1)
+            run = heading.add_run(section_name)
+            run.font.name = 'Times New Roman'
+            run.font.size = Pt(12)
+            run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)  # Set font color to black
+            paragraph_format = heading.paragraph_format
+            paragraph_format.space_after = Pt(10)
+            paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY  # Set alignment to justify
 
-        with open(converted_file_path, "wb") as out_f:
-            pdf_writer.write(out_f)
+            paragraph = converted_doc.add_paragraph(section_text)
+            run = paragraph.add_run()
+            run.font.name = 'Times New Roman'
+            run.font.size = Pt(12)
+            run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)  # Set font color to black
+            paragraph_format = paragraph.paragraph_format
+            paragraph_format.space_after = Pt(0)
+            paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY  # Set alignment to justify
+
+        # Save the DOCX file
+        docx_file_path = file_path.replace(os.path.splitext(file_path)[1], '_imrad.docx')
+        converted_doc.save(docx_file_path)
+        print(f"Converted DOCX file saved at {docx_file_path}")
+
+        # Convert the DOCX file to a PDF
+        pdf_file_path = file_path.replace(os.path.splitext(file_path)[1], '_imrad.pdf')
+        convert(docx_file_path, pdf_file_path)
+        print(f"Converted PDF file saved at {pdf_file_path}")
 
         return converted_file_path
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print(f"An error occurred: {str(e)}")
-
-
-        
-        
-
 
 
 

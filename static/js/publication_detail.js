@@ -3,22 +3,22 @@ function togglePdfViewer() {
     pdfViewer.style.display = (pdfViewer.style.display === 'none') ? 'block' : 'none';
 }
 
-function convertToImrad(item_id) {
-    fetch(`/convert_to_imrad/${item_id}`)
-        .then(response => response.blob()) // Convert response to a Blob
-        .then(blob => {
-            // Create a new Blob URL for the converted PDF
-            const pdfUrl = URL.createObjectURL(blob);
+    function convertToImrad(item_id) {
+        fetch(`/convert_to_imrad/${item_id}`)
+            .then(response => response.blob()) // Convert response to a Blob
+            .then(blob => {
+                // Create a new Blob URL for the converted PDF
+                const pdfUrl = URL.createObjectURL(blob);
 
-            // Update the embedded PDF viewer to show the converted PDF
-            const pdfViewer = document.getElementById('pdfViewer');
-            pdfViewer.setAttribute('data', pdfUrl);
-            pdfViewer.style.display = 'block';
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
+                // Update the embedded PDF viewer to show the converted PDF
+                const pdfViewer = document.getElementById('pdfViewer');
+                pdfViewer.setAttribute('data', pdfUrl);
+                pdfViewer.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
 
 
 function generateAPACitation() {

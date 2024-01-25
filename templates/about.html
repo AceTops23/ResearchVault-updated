@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/about.css') }}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Research Vault</title>
+</head>
+<body>
+    <a href="/"><i class='bx bx-chevron-left' id="back"></i></a>
+    <div class="container">
+        <h1>About Us</h1>
+
+        <div class="text">
+
+            <div class="container-1">
+                
+                <p>Research vault has been developed to address the challenges inside the Laguna State Polytechnic University - Sta. Cruz, Campus.</p>
+                <p>Intelligent chatbot to assist users in navigating the research repository and answering common queries,</p>
+                <p>Centralized research repository system that enables faculty members and students to quickly locate research materials, and collaborate effciently, and</p>
+                <p>special functionality that allows users to transform a manuscript into a succinct IMRAD format to help educators and student who are required to condense their research outcomes.</p>
+            </div>
+
+            <div class="container-2">
+                <div class="wrapper">
+                    <img src="/static/about-pics/chatbot interface.png" alt=""> 
+                    <img src="/static/about-pics/search interface.png" alt="">
+                    <img src="/static/about-pics/abstract interface.png" alt="">  
+                </div>   
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/about.js') }}"></script>
+</body>
+</html>
