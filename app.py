@@ -145,10 +145,27 @@ def about():
     return render_template("about.html")
 
 
-@app.route('/DV')
-def DV():
-    """Render the DV page."""
-    return render_template('DV.html')
+@app.route("/DV/<int:item_id>")
+def DV(item_id):
+    try:
+        # Create a new database connection
+        db_conn = DBConnection('database.db')
+        
+        # Fetch the specific item from the database using the item_id
+        item = db_conn.fetch_item_by_id(item_id)
+        
+        # Close the database connection
+        db_conn.close_connection()
+
+        # Render the DV page with the fetched item
+        return render_template('DV.html', item=item)
+
+    except Exception as e:
+        print("Error fetching item:", e)
+        
+        # Render an error page if an exception occurs
+        return render_template('404.html')
+
 
 @app.route('/genimrad')
 def genimrad():

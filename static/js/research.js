@@ -13,22 +13,16 @@ function performSearch() {
   window.location.href = url;
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('search-input');
+document.addEventListener("DOMContentLoaded", function() {
+  // Initialize Quill editor
+  var quill = new Quill('#editor', {
+      theme: 'snow',
+      readOnly: true  // Set to true if you only want to display the content
+  });
+
+  // Get the content from the Flask variable passed in the template
+  var content = {{ content|tojson|safe }};
   
-    searchInput.addEventListener('keyup', function () {
-      const searchQuery = searchInput.value.trim().toLowerCase();
-      const browseItems = document.getElementsByClassName('browse-item');
-  
-      for (const item of browseItems) {
-        const title = item.textContent.toLowerCase();
-        const searchMatch = !searchQuery || title.includes(searchQuery);
-  
-        if (searchMatch) {
-          item.style.display = 'block';
-        } else {
-          item.style.display = 'none';
-        }
-      }
-    });
+  // Update Quill editor with the content
+  quill.clipboard.dangerouslyPasteHTML(content);
 });

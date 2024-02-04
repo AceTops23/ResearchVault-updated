@@ -1,5 +1,6 @@
 import sqlite3
 from flask import g
+from docx import Document
 
 
 class DBConnection:
@@ -139,6 +140,35 @@ class DBConnection:
         except Exception as e:
             print("Error fetching publications:", e)
             return []
+        
+    def fetch_item_by_id(self, item_id):
+        try:
+            conn = self.get_db()
+            cursor = conn.cursor()
+            query = "SELECT id, title, IMRAD FROM working WHERE id = ?"
+            cursor.execute(query, (item_id,))
+            row = cursor.fetchone()
+
+            if row:
+                item = {'id': row[0], 'title': row[1], 'IMRAD': row[2]}
+                content = self.read_docx_content(item['IMRAD'])
+                item['content'] = content
+                return item
+            else:
+                return None
+
+        except Exception as e:
+            print("Error fetching item by ID:", e)
+            return None
+
+    def read_docx_content(self, IMRAD):
+        doc = Document(IMRAD)
+        content = []
+        for paragraph in doc.paragraphs:
+            content.append(paragraph.text)
+        return '\n'.join(content)
+
+
 
         
     def get_publication_by_id(self, item_id):
