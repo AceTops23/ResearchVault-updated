@@ -131,7 +131,7 @@ def fromdocx():
 def publish():
     """Render the publish page."""
     return render_template("publish.html")
-
+ 
 
 @app.route("/chatbot")
 def chatbot():

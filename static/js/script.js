@@ -7,7 +7,6 @@ const signupButtonDropdown = document.getElementById('signup-button-dropdown');
 const emailInput = document.getElementById('email-signup');
 const passwordInput = document.getElementById('password-signup');
 
-
 document.addEventListener('DOMContentLoaded', function() {
   var menuIcon = document.getElementById('menu-icon');
   var rightDropdown = document.querySelector('.right-dropdown');
