@@ -679,9 +679,6 @@ def load_label_map():
 # Global variable to store the label map
 imrad_label_map = load_label_map()
 
-
-
-
 @app.route('/convert_docx_to_imrad', methods=['POST'])
 def convert_docx_to_imrad_route():
     # Get the JSON data from the request
