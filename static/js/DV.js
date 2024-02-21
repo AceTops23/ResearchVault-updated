@@ -65,6 +65,14 @@ function loadComments() {
             <span id="commentText_${index}">${comment.comment}</span>
             <button class="edit-comment" onclick="editCommentPrompt(${index})"><i class='bx bx-edit'></i></button>
             <button class="delete-comment" onclick="deleteComment(${index})"><i class='bx bx-trash'></i></button>`;
+        commentElement.addEventListener('mouseover', function () {
+            if (!commentElement.classList.contains('highlighted')) {
+                highlightText(comment.text);
+            }
+        });
+        commentElement.addEventListener('mouseout', function () {
+            removeHighlight();
+        });
         commentsContainer.appendChild(commentElement);
     });
 }
@@ -88,19 +96,61 @@ function addComment() {
     saveComment(selectedText, commentInput);
 
     const commentElement = document.createElement('div');
+    const commentId = `comment-${Date.now()}`;
+    commentElement.id = commentId;
+    commentElement.dataset.highlightedText = selectedText;
     commentElement.innerHTML = `<strong>Comment on "${selectedText}":</strong> ${commentInput}`;
+
+    document.querySelector('#comments').appendChild(commentElement);
 
     const range = window.getSelection().getRangeAt(0);
     const span = document.createElement('span');
     span.className = 'highlighted';
     range.surroundContents(span);
 
-    document.querySelector('#comments').appendChild(commentElement);
-    
+
+    highlightSelectedText(selectedText);
 
     document.querySelector('#commentInput').value = '';
 
     loadComments();
+}
+
+function highlightText(text) {
+    const editorContent = document.getElementById('editor');
+    const editorText = editorContent.innerHTML;
+    const highlightedText = `<span class="highlighted">${text}</span>`;
+    const newEditorText = editorText.replace(new RegExp(text, 'g'), highlightedText);
+    editorContent.innerHTML = newEditorText;
+}
+
+document.querySelector('#comments').addEventListener('mouseover', function (event) {
+    const commentElement = event.target.closest('div[data-highlighted-text]');
+    if (commentElement) {
+        const highlightedText = commentElement.dataset.highlightedText;
+        highlightSelectedText(highlightedText);
+    }
+});
+
+document.getElementById('comments').addEventListener('mouseout', function () {
+    removeHighlight();
+});
+
+function removeHighlight() {
+    const editorContent = document.getElementById('editor');
+    editorContent.querySelectorAll('.highlighted').forEach(element => {
+        element.outerHTML = element.innerHTML;
+    });
+}
+
+function highlightSelectedText(selectedText) {
+    removeHighlight();
+
+    const editorContent = document.getElementById('editor');
+    const editorText = editorContent.innerHTML;
+    const highlightedText = `<span class="highlighted">${selectedText}</span>`;
+    const newEditorText = editorText.replace(new RegExp(selectedText, 'g'), highlightedText);
+    editorContent.innerHTML = newEditorText;
 }
 
 document.addEventListener('DOMContentLoaded', function () {

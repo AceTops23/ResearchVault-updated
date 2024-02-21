@@ -332,7 +332,7 @@ def submit_data():
         else:
             print("Failed to insert upload record.")
     
-    return "Data submitted successfully!"
+    return "Data submitted successfully!" 
 
 
 @app.route('/upload', methods=['POST'])
@@ -374,6 +374,27 @@ def upload_file():
         return "An error occurred while processing your request.", 500
     
     return "Data submitted successfully!"
+
+@app.route('/get_departments', methods=['GET'])
+def get_departments():
+    """Get all departments."""
+    departments = db_connection.get_departments()
+    return jsonify(departments)
+
+
+@app.route('/get_degrees/<department>', methods=['GET'])
+def get_degrees(department):
+    """Get the degrees for a specific department."""
+    degrees = db_connection.get_degrees(department)
+    return jsonify(degrees)
+
+@app.route('/get_subject_areas/<department>/<degree>', methods=['GET'])
+def get_subject_areas(department, degree):
+    """Get the subject areas for a specific department and degree."""
+    subject_areas = db_connection.get_subject_areas(department, degree)
+    return jsonify(subject_areas)
+
+
 
 
 @app.route('/abstract')
@@ -630,7 +651,20 @@ def generate_apa_citation_from_data(publication):
         formatted_authors += f", & {authors[-1].split()[-1]}"
     
     # Generate the APA citation
-    apa_citation = f"{formatted_authors}. ({publication['year']}). {publication['title']}. {publication['thesisAdvisor']}. {publication['department']}. {publication['degree']}."
+    degree = publication['degree']
+    subjectArea = publication['subjectArea']
+    department = publication['department']
+
+    if degree in ["Doctor", "Master"] or (degree == "Bachelor" and department == "College of Teacher Education"):
+        preposition = "of"
+    elif degree == "N/A":
+        degree = ""
+        preposition = ""
+    else:
+        preposition = "in"
+
+    apa_citation = f"{formatted_authors}. ({publication['year']}). {publication['title']}. {publication['thesisAdvisor']}. {department}. {degree} {preposition} {subjectArea}."
+
     
     return apa_citation
 

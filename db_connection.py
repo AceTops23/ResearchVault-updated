@@ -91,6 +91,44 @@ class DBConnection:
             print("Error inserting record:", e)
             conn.rollback()
             return False
+        
+    def get_departments(self):
+        """Get all departments from the fields table."""
+        try:
+            conn = self.get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT DISTINCT Department FROM fields")
+            departments = [row[0] for row in cursor.fetchall()]
+            return departments
+        except Exception as e:
+            print("Error getting departments:", e)
+            return []
+        
+    def get_degrees(self, department):
+        """Get the degrees for a specific department."""
+        try:
+            conn = self.get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT DISTINCT Degree FROM fields WHERE Department = ?", (department,))
+            degrees = [row[0] for row in cursor.fetchall()]
+            return degrees
+        except Exception as e:
+            print("Error getting degrees:", e)
+            return []
+
+    def get_subject_areas(self, department, degree):
+        """Get the subject areas for a specific degree."""
+        try:
+            conn = self.get_db()
+            cursor = conn.cursor()
+            cursor.execute('SELECT DISTINCT "Subject Area" FROM fields WHERE Department = ? AND Degree = ?', (department, degree))
+            subject_areas = [row[0] for row in cursor.fetchall()]
+            return subject_areas
+        except Exception as e:
+            print("Error getting subject areas:", e)
+            return []
+        
+
 
 
         

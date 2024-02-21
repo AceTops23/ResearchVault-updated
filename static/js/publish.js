@@ -87,5 +87,41 @@ submitButton.addEventListener('click', function(event) {
   pocContainer.classList.toggle('hidden');
 });
 
-                                                   
-document.getElementById('yearInput').addEventListener('change', updateYearInputValue);                                     
+
+
+$(document).ready(function() {
+  $.getJSON('/get_departments', function(data) {
+      // Populate the department dropdown with the data received from the server
+      $('#department').empty().append('<option selected disabled>Select Department</option>');
+      $.each(data, function(i, department) {
+          $('#department').append('<option value="' + department + '">' + department + '</option>');
+      });
+  });
+});
+
+$('#department').change(function() {
+  var department = $(this).val();
+  $.getJSON('/get_degrees/' + department, function(data) {
+      // Populate the degree dropdown with the data received from the server
+      $('#degree').empty().append('<option selected disabled>Select Degree</option>');
+      $.each(data, function(i, degree) {
+          $('#degree').append('<option value="' + degree + '">' + degree + '</option>');
+      });
+      $('#degree').prop('disabled', false); // Enable the degree dropdown
+  });
+});
+
+$('#degree').change(function() {
+  var department = $('#department').val();
+  var degree = $(this).val();
+  $.getJSON('/get_subject_areas/' + department + '/' + degree, function(data) {
+      // Populate the subject area dropdown with the data received from the server
+      $('#subjectArea').empty().append('<option selected disabled>Select Subject Area</option>');
+      $.each(data, function(i, subjectArea) {
+          $('#subjectArea').append('<option value="' + subjectArea + '">' + subjectArea + '</option>');
+      });
+      $('#subjectArea').prop('disabled', false); // Enable the subject area dropdown
+  });
+});
+
+
