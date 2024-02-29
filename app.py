@@ -318,6 +318,7 @@ def submit_data():
     department = request.form['department']
     degree = request.form['degree']
     subjectArea = request.form['subjectArea']
+    subjectCode = request.form['subjectCode']
     abstract = request.form['abstract']
     
     # Save the uploaded file and get its filename
@@ -326,7 +327,7 @@ def submit_data():
     
     # If a file was uploaded, insert a new record into the database
     if filename:
-        if db_connection.insert_upload(title, authors, publicationDate, thesisAdvisor, department, degree, subjectArea, abstract, filename):
+        if db_connection.insert_upload(title, authors, publicationDate, thesisAdvisor, department, degree, subjectArea, subjectCode, abstract, filename):
             print("Upload record inserted successfully!")
             return "Upload successful!"
         else:

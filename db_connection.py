@@ -79,12 +79,12 @@ class DBConnection:
         return True, 'Account created successfully.'
     
     
-    def insert_upload(self, title, authors, publicationDate, thesisAdvisor, department, degree, subjectArea, abstract, file_path):
+    def insert_upload(self, title, authors, publicationDate, thesisAdvisor, department, degree, subjectArea, subjectCode, abstract, file_path):
         try:
             conn = self.get_db()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO uploads (title, authors, publicationDate, thesisAdvisor, department, degree, subjectArea, abstract, file_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-                        (title, authors, publicationDate, thesisAdvisor, department, degree, subjectArea, abstract, file_path))
+            cursor.execute("INSERT INTO uploads (title, authors, publicationDate, thesisAdvisor, department, degree, subjectArea, subjectCode, abstract, file_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+                        (title, authors, publicationDate, thesisAdvisor, department, degree, subjectArea, subjectCode, abstract, file_path))
             conn.commit()
             return True
         except Exception as e:
@@ -227,8 +227,9 @@ class DBConnection:
                     'department': row[5],
                     'degree': row[6],
                     'subjectArea': row[7],
-                    'abstract': row[8],
-                    'file_path': row[9]
+                    'subjectCode': row[8],
+                    'abstract': row[9],
+                    'file_path': row[10]
                 }
                 return item
             else:

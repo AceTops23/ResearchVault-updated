@@ -12,18 +12,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const department = document.querySelector("#department").value;
     const degree = document.querySelector("#degree").value;
     const subjectArea = document.querySelector("#subjectArea").value;
+    const subjectCode = document.querySelector("#subjectCode").value;
     const abstract = document.querySelector("#abstract").value;
     const file = fileInput.files[0];
 
     // Check if any required field is empty
-    if (!title || !authors || !publicationDate || !thesisAdvisor || !department || !degree || !subjectArea || !abstract || !file) {
+    if (!title || !authors || !publicationDate || !thesisAdvisor || !department || !degree || !subjectArea || !subjectCode || !abstract || !file) {
       alert("Please fill in all fields and select a file.");
       return; // Stop form submission if any field is missing
     }
 
     // Check if the selected file is a DOCX or PDF
-    if (file.type !== "application/pdf" && file.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-      alert("Please select a DOCX or PDF file.");
+    if (file.type !== "application/pdf") {
+      alert("Please select a PDF file.");
       return; // Stop form submission if the file is not a DOCX or PDF
     }
 
@@ -35,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     formData.append("department", department);
     formData.append("degree", degree);
     formData.append("subjectArea", subjectArea);
+    formData.append("subjectCode", subjectCode);
     formData.append("abstract", abstract);
     formData.append("file", file);
 
@@ -124,4 +126,6 @@ $('#degree').change(function() {
   });
 });
 
-
+$('#subjectArea').change(function() {
+  $('#subjectCode').prop('disabled', false); // Enable the subject code dropdown
+});
